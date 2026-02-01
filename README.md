@@ -30,9 +30,10 @@ http://localhost:{PORT}/api/v1
 5. [Categories](#categories)
 6. [Articles](#articles)
 7. [Cart](#cart)
-8. [Address](#address)
-9. [Orders](#orders)
-10. [Error Responses](#error-responses)
+8. [Wishlist](#wishlist)
+9. [Address](#address)
+10. [Orders](#orders)
+11. [Error Responses](#error-responses)
 
 ---
 
@@ -2397,6 +2398,7 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 RAJAONGKIR_BASE_URL=https://rajaongkir.komerce.id/api/v1
 RAJAONGKIR_API_KEY=your-rajaongkir-key
+RAJAONGKIR_ORIGIN=origin-store-id
 ```
 
 ### Scripts

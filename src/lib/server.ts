@@ -27,7 +27,12 @@ const createServer = () => {
   })
 
   app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, World!')
+    res.status(200).json({
+      message: 'Welcome to Litera Books API',
+      status: 'OK',
+      version: '1.0.0',
+      timestamp: new Date().toISOString()
+    })
   })
 
   app.use('/api/v1/admin', AdminRoute)

@@ -195,10 +195,10 @@ model OrderItem {
 enum Courier {
   JNE
   POS
-  TIKI
+  Tiki
   JNT
-  SICEPAT
-  ANTERAJA
+  SiCepat
+  Ninja
 }
 
 model Shipping {

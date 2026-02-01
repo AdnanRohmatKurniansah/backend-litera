@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node build/index.js",
     "vercel-build": "npx prisma generate && npm run build",
+    "postinstall": "prisma generate",
     "format": "prettier --write . && eslint . --fix",
     "format:check": "prettier --check . && eslint .",
     "lint": "eslint .",
