@@ -8,6 +8,7 @@ import { CartRoute } from '../routes/cart.route'
 import { AddressRoute } from '../routes/address.route'
 import { OrderRoute } from '../routes/order.route'
 import { ArticleRoute } from '../routes/article.route'
+import { WishlistRoute } from '../routes/wishlist.route'
 
 const createServer = () => {
   const app: Application = express()
@@ -36,6 +37,7 @@ const createServer = () => {
 
   app.use('/api/v1/user', UserRoute)
   app.use('/api/v1/cart', CartRoute)
+  app.use('/api/v1/wishlist', WishlistRoute)
   app.use('/api/v1/address', AddressRoute)
   app.use('/api/v1/order', OrderRoute)
 

@@ -49,6 +49,7 @@ model Users {
   created_at DateTime @default(now())
 
   carts Cart[]
+  wishlists Wishlist[]
   orders Order[]
   addresses Address[]
   reviews Review[]
@@ -88,6 +89,7 @@ model Books {
   
   category Categories @relation(fields: [categoryId], references: [id])
   cartItems CartItem[]
+  wishlistItems WishlistItem[]
   orderItems OrderItem[]
   reviews Review[]
   bookImages BookImages[]
@@ -131,6 +133,25 @@ model CartItem {
   created_at DateTime @default(now())
 
   cart Cart @relation(fields: [cartId], references: [id])
+  book Books @relation(fields: [bookId], references: [id])
+}
+
+model Wishlist {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  created_at DateTime @default(now())
+
+  user Users @relation(fields: [userId], references: [id])
+  items WishlistItem[]
+}
+
+model WishlistItem {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  wishlistId String @db.ObjectId
+  bookId String @db.ObjectId
+  created_at DateTime @default(now())
+
+  wishlist Wishlist @relation(fields: [wishlistId], references: [id])
   book Books @relation(fields: [bookId], references: [id])
 }
 

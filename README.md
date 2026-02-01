@@ -1800,6 +1800,102 @@ Authorization: Bearer {access_token}
 }
 ```
 
+## Wishlist
+
+### Get User Wishlist
+Mendapatkan wishlist user.
+
+**Endpoint:** `GET /wishlist`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Wishlist data",
+  "data": {
+    "id": "507f1f77bcf86cd799439015",
+    "userId": "507f1f77bcf86cd799439011",
+    "items": [
+      {
+        "id": "507f1f77bcf86cd799439016",
+        "qty": 2,
+        "book": {
+          "id": "507f1f77bcf86cd799439011",
+          "name": "Book Title",
+          "price": 100000,
+          "discount_price": 85000,
+          "image_url": "https://cloudinary.com/book.jpg"
+        }
+      }
+    ],
+    "created_at": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+---
+
+### Add Item to Wishlist
+Menambahkan item ke wishlist.
+
+**Endpoint:** `POST /wishlist/add`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "bookId": "507f1f77bcf86cd799439011"
+}
+```
+
+**Validation Rules:**
+- `bookId`: Required, string
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Item added to wishlist",
+  "data": {
+    "id": "507f1f77bcf86cd799439016",
+    "wishlistId": "507f1f77bcf86cd799439015",
+    "bookId": "507f1f77bcf86cd799439011"
+  }
+}
+```
+
+---
+
+### Delete Wishlist Item
+Menghapus item dari wishlist.
+
+**Endpoint:** `DELETE /wishlist/item/delete/:wishlistItemId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Item removed from wishlist",
+  "data": {
+    "id": "507f1f77bcf86cd799439016"
+  }
+}
+```
+
 ---
 
 ## Address

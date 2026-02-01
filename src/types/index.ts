@@ -1,5 +1,4 @@
 import { Role } from '@prisma/client'
-import { auth } from 'google-auth-library';
 
 export interface AdminToken {
   id: string
