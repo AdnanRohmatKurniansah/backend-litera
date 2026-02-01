@@ -8,8 +8,10 @@ import {
   DeleteBookImage,
   GetAllBook,
   GetBook,
+  GetBookByFilter,
   GetBookImageById,
   GetBookImages,
+  GetDiscountedBook,
   GetUniqueBook,
   UpdateBook,
   UpdateBookImage
@@ -62,6 +64,54 @@ export const GetBySlug = async (req: Request, res: Response) => {
     const data = await GetUniqueBook(slug)
 
     return successResponse(res, "Book's Detail Data", data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetByFilter = async (req: Request, res: Response) => {
+  try {
+    const {
+      keyword = '',
+      category,
+      language,
+      minPrice,
+      maxPrice,
+      page = 1,
+      sortBy = 'newest',
+      limit = 10
+    } = req.query
+
+    const data = await GetBookByFilter(
+      String(keyword),
+      String(category || ''),
+      String(language || ''),
+      Number(minPrice),
+      Number(maxPrice),
+      Number(page),
+      String(sortBy),
+      Number(limit)
+    )
+
+    return successResponse(res, "Book's Filter Data", {
+      data,
+      page: Number(page),
+      limit: Number(limit)
+    })
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetDiscounted = async (req: Request, res: Response) => {
+  try {
+    const data  = await GetDiscountedBook(30)
+
+    return successResponse(res, "Discounted Book's Data", {
+      data
+    })
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)

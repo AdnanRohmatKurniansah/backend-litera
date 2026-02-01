@@ -8,8 +8,10 @@ import {
   DeleteImage,
   GetAll,
   GetAllImages,
+  GetByFilter,
   GetById,
   GetBySlug,
+  GetDiscounted,
   Update,
   UpdateImage
 } from '../controllers/book.controller'
@@ -17,8 +19,10 @@ import {
 export const BookRoute: Router = Router()
 
 BookRoute.get('/', GetAll)
-BookRoute.get('/:bookId', GetById)
 BookRoute.get('/slug/:slug', GetBySlug)
+BookRoute.get('/filter', GetByFilter)
+BookRoute.get('/discounted', GetDiscounted)
+BookRoute.get('/:bookId', GetById)
 BookRoute.get('/images/:bookId', GetAllImages)
 
 // Protected Routes

@@ -33,9 +33,9 @@ export const GetAll = async (req: Request, res: Response) => {
 
 export const GetById = async (req: Request, res: Response) => {
   try {
-    const categoryId = String(req.params.categoryId)
+    const articleId = String(req.params.articleId)
 
-    const data = await GetArticle(categoryId)
+    const data = await GetArticle(articleId)
 
     return successResponse(res, "Article's Detail Data", data)
   } catch (error) {

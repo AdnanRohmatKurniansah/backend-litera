@@ -1,14 +1,13 @@
 import { Router } from 'express'
-import { Create, Delete, GetAll, GetById, Update } from '../controllers/category.controller'
 import { adminAuthenticate, checkRole } from '../middlewares/admin.auth'
 import { upload } from '../middlewares/upload.middleware'
-import { GetBySlug } from '../controllers/article.controller'
+import { Create, Delete, GetAll, GetById, GetBySlug, Update } from '../controllers/article.controller'
 
 export const ArticleRoute: Router = Router()
 
 ArticleRoute.get('/', GetAll)
-ArticleRoute.get('/:articleId', GetById)
 ArticleRoute.get('/slug/:slug', GetBySlug)
+ArticleRoute.get('/:articleId', GetById)
 
 // Protected Routes
 ArticleRoute.use(adminAuthenticate, checkRole(['Superadmin', 'Staff']))

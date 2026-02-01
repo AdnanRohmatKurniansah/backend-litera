@@ -34,6 +34,124 @@ export const GetUniqueBook = async (slug: string) => {
   })
 }
 
+export const GetBookByFilter = async (
+  keyword: string,
+  categorySlug: string,
+  language: string,
+  minPrice: number,
+  maxPrice: number,
+  page: number,
+  sortBy: string,
+  limit: number
+) => {
+  const offset = (page - 1) * limit
+
+  const where: any = {}
+
+  if (keyword) {
+    where.OR = [
+      {
+        name: {
+          contains: keyword,
+          mode: 'insensitive'
+        }
+      },
+      {
+        desc: {
+          contains: keyword,
+          mode: 'insensitive'
+        }
+      }
+    ]
+  }
+
+  if (categorySlug) {
+    where.category = {
+      slug: categorySlug
+    }
+  }
+
+  if (language) {
+    where.language = language
+  }
+
+  if (minPrice || maxPrice) {
+    const priceFilter = [
+      {
+        discount_price: {
+          not: null,
+          ...(minPrice ? { gte: minPrice } : {}),
+          ...(maxPrice ? { lte: maxPrice } : {})
+        }
+      },
+      {
+        discount_price: null,
+        price: {
+          ...(minPrice ? { gte: minPrice } : {}),
+          ...(maxPrice ? { lte: maxPrice } : {})
+        }
+      }
+    ]
+
+    if (where.OR) {
+      where.AND = [
+        { OR: where.OR },
+        { OR: priceFilter }
+      ]
+      delete where.OR
+    } else {
+      where.OR = priceFilter
+    }
+  }
+
+  let orderBy: any[] = []
+
+  switch (sortBy) {
+    case 'price_low':
+      orderBy = [
+        { discount_price: 'asc' },
+        { price: 'asc' }
+      ]
+      break
+
+    case 'price_high':
+      orderBy = [
+        { discount_price: 'desc' },
+        { price: 'desc' }
+      ]
+      break
+
+    case 'newest':
+    default:
+      orderBy = [{ created_at: 'desc' }]
+      break
+  }
+
+  return await prisma.books.findMany({
+    where,
+    orderBy,
+    skip: offset,
+    take: limit,
+    include: {
+      category: true
+    }
+  })
+}
+
+export const GetDiscountedBook = async (limit: number) => {
+  return await prisma.books.findMany({
+    where: {
+      discount_price: {
+        not: null
+      }
+    },
+    orderBy: {
+      created_at: 'desc'
+    },
+    take: limit
+  })
+}
+
 export const CreateBook = async (payload: BookDto) => {
   const { categoryId, ...rest } = payload
 

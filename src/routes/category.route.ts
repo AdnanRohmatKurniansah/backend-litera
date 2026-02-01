@@ -6,8 +6,8 @@ import { upload } from '../middlewares/upload.middleware'
 export const CategoryRoute: Router = Router()
 
 CategoryRoute.get('/', GetAll)
-CategoryRoute.get('/:categoryId', GetById)
 CategoryRoute.get('/slug/:slug', GetBySlug)
+CategoryRoute.get('/:categoryId', GetById)
 
 // Protected Routes
 CategoryRoute.use(adminAuthenticate, checkRole(['Superadmin', 'Staff']))
