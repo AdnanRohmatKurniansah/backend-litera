@@ -11,7 +11,7 @@
     // "moduleResolution": "nodenext",
     
     /* Emit */
-    "rootDir": "src",
+    // "rootDir": "src",
     "outDir": "build",
     "sourceMap": true,
     "resolveJsonModule": true,
@@ -31,7 +31,8 @@
     "ignoreDeprecations": "5.0"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "api/**/*"
   ],
   "exclude": ["node_modules", "**/*.test.ts", "build"]
 }
