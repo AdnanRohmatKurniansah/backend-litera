@@ -71,6 +71,9 @@ model Books {
   slug String @unique
   categoryId String @db.ObjectId
   desc String
+  author String
+  publisher String
+  published_at DateTime
   language String
   page Int
   length Float

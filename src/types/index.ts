@@ -1,4 +1,5 @@
 import { Role } from '@prisma/client'
+import { auth } from 'google-auth-library';
 
 export interface AdminToken {
   id: string
@@ -49,6 +50,9 @@ export type BookDto = {
   name: string
   slug: string
   desc: string
+  author: string
+  publisher: string
+  published_at: string
   language: string
   page: number
   length: number
