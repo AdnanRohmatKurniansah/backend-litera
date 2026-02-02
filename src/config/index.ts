@@ -15,3 +15,5 @@ export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 export const RAJAONGKIR_BASE_URL = process.env.RAJAONGKIR_BASE_URL
 export const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY
 export const RAJAONGKIR_ORIGIN = process.env.RAJAONGKIR_ORIGIN
+export const MIDTRANS_CLIENT_KEY = process.env.MIDTRANS_CLIENT_KEY
+export const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY

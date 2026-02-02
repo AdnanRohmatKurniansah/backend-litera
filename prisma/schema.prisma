@@ -162,6 +162,7 @@ enum OrderStatus {
   Shipped
   Completed
   Cancelled
+  Failed
 }
 
 model Order {
@@ -223,9 +224,9 @@ enum PaymentStatus {
 model Payment {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   orderId String @unique @db.ObjectId
-  method String
+  method String?
   status PaymentStatus @default(Pending)
-  token String?
+  token String
   paid_at DateTime?
 
   order Order @relation(fields: [orderId], references: [id])

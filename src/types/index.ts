@@ -1,4 +1,4 @@
-import { Role } from '@prisma/client'
+import { Courier, Role } from '@prisma/client'
 
 export interface AdminToken {
   id: string
@@ -87,4 +87,13 @@ export type AddressDto = {
   street: string
   zip: string
   is_primary?: boolean
+}
+
+export const courierMap: Record<string, Courier> = {
+  jne: Courier.JNE,
+  pos: Courier.POS,
+  tiki: Courier.Tiki,
+  jnt: Courier.JNT,
+  sicepat: Courier.SiCepat,
+  ninja: Courier.Ninja
 }

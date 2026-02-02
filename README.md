@@ -33,6 +33,7 @@ http://localhost:{PORT}/api/v1
 8. [Wishlist](#wishlist)
 9. [Address](#address)
 10. [Orders](#orders)
+12. [Reviews](#reviews)
 11. [Error Responses](#error-responses)
 
 ---
@@ -2157,6 +2158,106 @@ Authorization: Bearer {access_token}
 
 ## Orders
 
+### Get All Orders (Admin Only)
+Mendapatkan semua order dengan pagination.
+
+**Endpoint:** `GET /order?page=1&limit=10`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Query Parameters:**
+- `page` (optional): number, default 1
+- `limit` (optional): number, default 10
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Order's Data",
+  "data": {
+    "data": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "userId": "507f1f77bcf86cd799439011",
+        "addressId": "507f1f77bcf86cd799439017",
+        "status": "Completed",
+        "total": 116000,
+        "note": "Packing rapi ya",
+        "created_at": "2024-02-02T00:00:00.000Z"
+      }
+    ],
+    "total": 50,
+    "page": 1,
+    "limit": 10
+  }
+}
+```
+
+---
+
+### Get Order By ID (Admin Only)
+Mendapatkan detail order berdasarkan ID.
+
+**Endpoint:** `GET /order/detail/:orderId`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Order's Detail Data",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "userId": "507f1f77bcf86cd799439011",
+    "addressId": "507f1f77bcf86cd799439017",
+    "status": "Completed",
+    "total": 116000,
+    "note": "Packing rapi ya",
+    "created_at": "2024-02-02T00:00:00.000Z"
+  }
+}
+```
+
+---
+
+### Delete Order (Admin Only)
+Menghapus order.
+
+**Endpoint:** `DELETE /order/delete/:orderId`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Order data deleted successfully",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Order data not found"
+}
+```
+
+---
+
 ### Get Shipping Cost
 Menghitung biaya pengiriman.
 
@@ -2170,54 +2271,552 @@ Authorization: Bearer {access_token}
 **Request Body:**
 ```json
 {
-  "origin": "501",
-  "destination": "114",
+  "destination": "501",
   "weight": 1000,
   "courier": "jne"
 }
 ```
 
 **Validation Rules:**
-- `origin`: Required, string (city code)
-- `destination`: Required, string (city code)
+- `destination`: Required, string (city ID from RajaOngkir)
 - `weight`: Required, number, minimum 1 (in grams)
-- `courier`: Required, enum ["jne", "pos", "tiki", "jnt", "sicepat", "ninja", "pos"]
+- `courier`: Required, enum ["jne", "pos", "tiki", "jnt", "sicepat", "ninja"]
 
 **Response Success (200):**
 ```json
 {
   "success": true,
   "message": "Shipping cost retrieved",
+  "data": [
+    {
+      "service": "REG",
+      "description": "Layanan Reguler",
+      "cost": 18000,
+      "etd": "2-3"
+    },
+    {
+      "service": "YES",
+      "description": "Yakin Esok Sampai",
+      "cost": 30000,
+      "etd": "1-1"
+    }
+  ]
+}
+```
+
+---
+
+### Checkout
+Membuat order baru dan mendapatkan Midtrans payment token.
+
+**Endpoint:** `POST /order/checkout`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "addressId": "507f1f77bcf86cd799439017",
+  "courier": "jne",
+  "service": "REG",
+  "note": "Tolong packing rapi ya, ini untuk hadiah"
+}
+```
+
+**Validation Rules:**
+- `addressId`: Required, string (MongoDB ObjectId)
+- `courier`: Required, enum ["jne", "pos", "tiki", "jnt", "sicepat", "ninja"]
+- `service`: Required, string (service code from shipping cost response)
+- `note`: Optional, string
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Checkout success",
   "data": {
-    "origin": "501",
-    "destination": "114",
-    "weight": 1000,
-    "courier": "jne",
-    "costs": [
-      {
-        "service": "REG",
-        "description": "Layanan Reguler",
-        "cost": [
-          {
-            "value": 15000,
-            "etd": "2-3",
-            "note": ""
-          }
-        ]
-      },
-      {
-        "service": "YES",
-        "description": "Yakin Esok Sampai",
-        "cost": [
-          {
-            "value": 25000,
-            "etd": "1-1",
-            "note": ""
-          }
-        ]
-      }
-    ]
+    "orderId": "550e8400-e29b-41d4-a716-446655440000",
+    "snapToken": "66e4fa55-fdac-4ef9-91b5-733b97d1b862",
+    "redirectUrl": "https://app.sandbox.midtrans.com/snap/v2/vtweb/66e4fa55-fdac-4ef9-91b5-733b97d1b862"
   }
+}
+```
+
+**Response Error (400):**
+```json
+{
+  "success": false,
+  "message": "Cart is empty"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "User address not found"
+}
+```
+
+**Response Error (409):**
+```json
+{
+  "success": false,
+  "message": "Insufficient \"Book Title\" book stock"
+}
+```
+
+---
+
+### Payment Callback
+Webhook endpoint untuk menerima notifikasi pembayaran dari Midtrans.
+
+**Endpoint:** `POST /order/callback`
+
+**Note:** Endpoint ini dipanggil oleh Midtrans server, bukan dari client.
+
+**Request Body:**
+```json
+{
+  "transaction_time": "2024-02-02 15:30:00",
+  "transaction_status": "settlement",
+  "transaction_id": "b4d4b2f4-6c6f-4c4a-8b0a-1234567890ab",
+  "status_message": "midtrans payment notification",
+  "status_code": "200",
+  "signature_key": "calculated_hash_signature",
+  "settlement_time": "2024-02-02 15:31:00",
+  "payment_type": "credit_card",
+  "order_id": "550e8400-e29b-41d4-a716-446655440000",
+  "merchant_id": "G123456789",
+  "gross_amount": "116000.00",
+  "fraud_status": "accept",
+  "currency": "IDR"
+}
+```
+
+**Transaction Status Values:**
+- `capture`: Payment captured (credit card)
+- `settlement`: Payment settled
+- `pending`: Payment pending
+- `deny`: Payment denied
+- `cancel`: Payment canceled
+- `expire`: Payment expired
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Payment callback processed successfully",
+  "data": null
+}
+```
+
+**Response Error (403):**
+```json
+{
+  "success": false,
+  "message": "Invalid signature key"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Order not found"
+}
+```
+
+---
+
+### Get Completed Books
+Mendapatkan daftar buku yang sudah dibeli user dengan status Completed (untuk review).
+
+**Endpoint:** `GET /order/completed-books`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Completed orders books",
+  "data": [
+    {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Book Title",
+      "slug": "book-title",
+      "image_url": "https://cloudinary.com/book.jpg"
+    }
+  ]
+}
+```
+
+---
+
+## Reviews
+
+### Get Book Reviews
+Mendapatkan semua review untuk sebuah buku (Public).
+
+**Endpoint:** `GET /reviews/book/:bookId?page=1&limit=10`
+
+**Query Parameters:**
+- `page` (optional): number, default 1
+- `limit` (optional): number, default 10
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Book's Reviews",
+  "data": {
+    "data": [
+      {
+        "id": "507f1f77bcf86cd799439020",
+        "userId": "507f1f77bcf86cd799439011",
+        "bookId": "507f1f77bcf86cd799439011",
+        "rating": 5,
+        "comment": "Buku yang sangat bagus! Recommended!",
+        "created_at": "2024-02-02T00:00:00.000Z",
+        "user": {
+          "id": "507f1f77bcf86cd799439011",
+          "name": "John Doe",
+          "profile": "https://cloudinary.com/profile.jpg"
+        }
+      }
+    ],
+    "total": 25,
+    "page": 1,
+    "limit": 10
+  }
+}
+```
+
+---
+
+### Get Book Average Rating
+Mendapatkan rating rata-rata dan jumlah review untuk sebuah buku (Public).
+
+**Endpoint:** `GET /reviews/book/:bookId/rating`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Book's Rating",
+  "data": {
+    "averageRating": 4.5,
+    "totalReviews": 25
+  }
+}
+```
+
+---
+
+### Get User Reviews
+Mendapatkan semua review yang dibuat oleh user yang sedang login.
+
+**Endpoint:** `GET /reviews/my-reviews?page=1&limit=10`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Query Parameters:**
+- `page` (optional): number, default 1
+- `limit` (optional): number, default 10
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Your Reviews",
+  "data": {
+    "data": [
+      {
+        "id": "507f1f77bcf86cd799439020",
+        "userId": "507f1f77bcf86cd799439011",
+        "bookId": "507f1f77bcf86cd799439011",
+        "rating": 5,
+        "comment": "Buku yang sangat bagus!",
+        "created_at": "2024-02-02T00:00:00.000Z",
+        "book": {
+          "id": "507f1f77bcf86cd799439011",
+          "name": "Book Title",
+          "slug": "book-title",
+          "image_url": "https://cloudinary.com/book.jpg",
+          "price": 100000,
+          "discount_price": 85000
+        }
+      }
+    ],
+    "total": 5,
+    "page": 1,
+    "limit": 10
+  }
+}
+```
+
+---
+
+### Get Review By ID
+Mendapatkan detail review berdasarkan ID.
+
+**Endpoint:** `GET /reviews/:reviewId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review Detail",
+  "data": {
+    "id": "507f1f77bcf86cd799439020",
+    "userId": "507f1f77bcf86cd799439011",
+    "bookId": "507f1f77bcf86cd799439011",
+    "rating": 5,
+    "comment": "Buku yang sangat bagus!",
+    "created_at": "2024-02-02T00:00:00.000Z",
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "profile": "https://cloudinary.com/profile.jpg"
+    },
+    "book": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Book Title",
+      "slug": "book-title",
+      "image_url": "https://cloudinary.com/book.jpg"
+    }
+  }
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Review not found"
+}
+```
+
+---
+
+### Create Review
+Membuat review baru untuk buku yang sudah dibeli.
+
+**Endpoint:** `POST /reviews/create`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "bookId": "507f1f77bcf86cd799439011",
+  "rating": 5,
+  "comment": "Buku yang sangat bagus! Recommended untuk semua orang!"
+}
+```
+
+**Validation Rules:**
+- `bookId`: Required, string (MongoDB ObjectId)
+- `rating`: Required, integer, minimum 1, maximum 5
+- `comment`: Optional, string
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review created successfully",
+  "data": {
+    "id": "507f1f77bcf86cd799439020",
+    "userId": "507f1f77bcf86cd799439011",
+    "bookId": "507f1f77bcf86cd799439011",
+    "rating": 5,
+    "comment": "Buku yang sangat bagus!",
+    "created_at": "2024-02-02T00:00:00.000Z",
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "profile": "https://cloudinary.com/profile.jpg"
+    },
+    "book": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Book Title",
+      "slug": "book-title"
+    }
+  }
+}
+```
+
+**Response Error (403):**
+```json
+{
+  "success": false,
+  "message": "You can only review books you have purchased"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Book not found"
+}
+```
+
+**Response Error (409):**
+```json
+{
+  "success": false,
+  "message": "You have already reviewed this book"
+}
+```
+
+---
+
+### Update Review
+Update review yang sudah dibuat.
+
+**Endpoint:** `PUT /reviews/update/:reviewId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "rating": 4,
+  "comment": "Setelah dibaca ulang, tetap bagus tapi ada beberapa bagian yang kurang"
+}
+```
+
+**Validation Rules:**
+- `rating`: Optional, integer, minimum 1, maximum 5
+- `comment`: Optional, string
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review updated successfully",
+  "data": {
+    "id": "507f1f77bcf86cd799439020",
+    "userId": "507f1f77bcf86cd799439011",
+    "bookId": "507f1f77bcf86cd799439011",
+    "rating": 4,
+    "comment": "Setelah dibaca ulang, tetap bagus tapi ada beberapa bagian yang kurang",
+    "created_at": "2024-02-02T00:00:00.000Z",
+    "book": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Book Title",
+      "slug": "book-title"
+    }
+  }
+}
+```
+
+**Response Error (403):**
+```json
+{
+  "success": false,
+  "message": "You can only update your own review"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Review not found"
+}
+```
+
+---
+
+### Delete Review
+Menghapus review sendiri.
+
+**Endpoint:** `DELETE /reviews/delete/:reviewId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review deleted successfully",
+  "data": {
+    "id": "507f1f77bcf86cd799439020"
+  }
+}
+```
+
+**Response Error (403):**
+```json
+{
+  "success": false,
+  "message": "You can only delete your own review"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Review not found"
+}
+```
+
+---
+
+### Delete Review (Admin Only)
+Admin menghapus review apapun.
+
+**Endpoint:** `DELETE /reviews/admin/delete/:reviewId`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review deleted successfully",
+  "data": {
+    "id": "507f1f77bcf86cd799439020"
+  }
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Review not found"
 }
 ```
 
