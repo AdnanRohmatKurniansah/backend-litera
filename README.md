@@ -2432,10 +2432,10 @@ Webhook endpoint untuk menerima notifikasi pembayaran dari Midtrans.
 
 ---
 
-### Get Completed Books
-Mendapatkan daftar buku yang sudah dibeli user dengan status Completed (untuk review).
+### Process Order (Admin Only)
+Admin memproses order yg sudah paid.
 
-**Endpoint:** `GET /order/completed-books`
+**Endpoint:** `UPDATE /order/process/:orderId`
 
 **Headers:**
 ```
@@ -2446,15 +2446,63 @@ Authorization: Bearer {access_token}
 ```json
 {
   "success": true,
-  "message": "Completed orders books",
-  "data": [
-    {
-      "id": "507f1f77bcf86cd799439011",
-      "name": "Book Title",
-      "slug": "book-title",
-      "image_url": "https://cloudinary.com/book.jpg"
-    }
-  ]
+  "message": "Order has been processing",
+  "data": {
+    "id": "507f1f77bcf86cd799439020"
+  }
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Order data not found"
+}
+```
+
+---
+
+### Items Arrived
+Update order untuk items yang sudah sampai.
+
+**Endpoint:** `PUT /order/arrived/:orderId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Items has been arrived, Thankyou",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "userId": "507f1f77bcf86cd799439011",
+    "addressId": "507f1f77bcf86cd799439017",
+    "status": "Completed",
+    "total": 116000,
+    "note": "Packing rapi ya",
+    "created_at": "2024-02-02T00:00:00.000Z"
+  }
+}
+```
+
+**Response Error (403):**
+```json
+{
+  "success": false,
+  "message": "You can only update your own order"
+}
+```
+
+**Response Error (404):**
+```json
+{
+  "success": false,
+  "message": "Order not found"
 }
 ```
 
@@ -2817,6 +2865,206 @@ Authorization: Bearer {admin_access_token}
 {
   "success": false,
   "message": "Review not found"
+}
+```
+---
+
+## Dashboard Statistics (Admin Only)
+
+### Get Dashboard Overview
+Mendapatkan statistik overview untuk dashboard admin.
+
+**Endpoint:** `GET /stats/dashboard`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Dashboard statistics",
+  "data": {
+    "overview": {
+      "totalUsers": 150,
+      "totalBooks": 500,
+      "totalOrders": 320,
+      "totalRevenue": 48500000,
+      "pendingOrders": 15,
+      "completedOrders": 280,
+      "lowStockBooks": 12
+    },
+    "recentOrders": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "receipt_number": "INV-2024-0001",
+        "status": "Paid",
+        "total": 150000,
+        "created_at": "2024-02-02T10:30:00.000Z",
+        "user": {
+          "name": "John Doe",
+          "email": "john@example.com"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Get Order Statistics
+Mendapatkan statistik order berdasarkan status dan trend bulanan.
+
+**Endpoint:** `GET /stats/orders`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Order statistics",
+  "data": {
+    "byStatus": [
+      {
+        "status": "Completed",
+        "_count": {
+          "status": 280
+        }
+      },
+      {
+        "status": "Pending",
+        "_count": {
+          "status": 15
+        }
+      },
+      {
+        "status": "Processing",
+        "_count": {
+          "status": 20
+        }
+      },
+      {
+        "status": "Paid",
+        "_count": {
+          "status": 5
+        }
+      }
+    ],
+    "monthly": [
+      {
+        "month": "2024-02",
+        "count": 45,
+        "revenue": 6750000
+      },
+      {
+        "month": "2024-01",
+        "count": 52,
+        "revenue": 7800000
+      },
+      {
+        "month": "2023-12",
+        "count": 68,
+        "revenue": 10200000
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Get Top Selling Products
+Mendapatkan daftar produk terlaris.
+
+**Endpoint:** `GET /stats/top-products?limit=5`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Query Parameters:**
+- `limit` (optional): number, default 5
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Top selling products",
+  "data": [
+    {
+      "book": {
+        "id": "507f1f77bcf86cd799439011",
+        "name": "Book Title 1",
+        "slug": "book-title-1",
+        "image_url": "https://cloudinary.com/book1.jpg",
+        "price": 100000,
+        "discount_price": 85000,
+        "qty": 45
+      },
+      "totalSold": 125
+    },
+    {
+      "book": {
+        "id": "507f1f77bcf86cd799439012",
+        "name": "Book Title 2",
+        "slug": "book-title-2",
+        "image_url": "https://cloudinary.com/book2.jpg",
+        "price": 150000,
+        "discount_price": null,
+        "qty": 30
+      },
+      "totalSold": 98
+    }
+  ]
+}
+```
+
+---
+
+### Get Low Stock Books
+Mendapatkan daftar buku dengan stok rendah.
+
+**Endpoint:** `GET /stats/low-stock?threshold=10`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Query Parameters:**
+- `threshold` (optional): number, default 10 (stok di bawah nilai ini)
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Low stock books",
+  "data": [
+    {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "Book Title",
+      "slug": "book-title",
+      "image_url": "https://cloudinary.com/book.jpg",
+      "qty": 3,
+      "price": 100000
+    },
+    {
+      "id": "507f1f77bcf86cd799439012",
+      "name": "Another Book",
+      "slug": "another-book",
+      "image_url": "https://cloudinary.com/book2.jpg",
+      "qty": 5,
+      "price": 120000
+    }
+  ]
 }
 ```
 

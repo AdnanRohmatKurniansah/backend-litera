@@ -28,13 +28,6 @@ ReviewRoute.put('/update/:reviewId', UpdateReviewController)
 ReviewRoute.delete('/delete/:reviewId', DeleteReviewController)
 
 // Protected routes - Admin
-ReviewRoute.use(
-  '/admin',
-  adminAuthenticate,
-  checkRole(['Superadmin', 'Staff'])
-)
+ReviewRoute.use('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']))
 
-ReviewRoute.delete(
-  '/admin/delete/:reviewId',
-  AdminDeleteReviewController
-)
+ReviewRoute.delete('/admin/delete/:reviewId', AdminDeleteReviewController)

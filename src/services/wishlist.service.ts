@@ -31,7 +31,7 @@ export const AddItemToWishlist = async (wishlistId: string, bookId: string) => {
   return prisma.wishlistItem.create({
     data: {
       wishlistId,
-      bookId,
+      bookId
     }
   })
 }

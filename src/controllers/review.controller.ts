@@ -1,8 +1,8 @@
 import { type Request, type Response } from 'express'
-import { 
-  CreateReview, 
-  GetBookReviews, 
-  GetUserReviews, 
+import {
+  CreateReview,
+  GetBookReviews,
+  GetUserReviews,
   GetReview,
   UpdateReview,
   DeleteReview,
@@ -42,7 +42,7 @@ export const GetUserReviewsController = async (req: Request, res: Response) => {
 
     const { data, total } = await GetUserReviews(userId, page, limit)
 
-    return successResponse(res, "Your Reviews", {
+    return successResponse(res, 'Your Reviews', {
       data,
       total,
       page,
@@ -64,7 +64,7 @@ export const GetReviewById = async (req: Request, res: Response) => {
       return errorResponse(res, 'Review not found', 404)
     }
 
-    return successResponse(res, "Review Detail", data)
+    return successResponse(res, 'Review Detail', data)
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)
@@ -85,7 +85,7 @@ export const CreateReviewController = async (req: Request, res: Response) => {
     const book = await prisma.books.findUnique({
       where: { id: requestData.bookId }
     })
-    
+
     if (!book) {
       return errorResponse(res, 'Book not found', 404)
     }
@@ -104,7 +104,7 @@ export const CreateReviewController = async (req: Request, res: Response) => {
     const hasCompletedOrder = await prisma.order.findFirst({
       where: {
         userId,
-        status: 'Completed', 
+        status: 'Completed',
         items: {
           some: {
             bookId: requestData.bookId
@@ -150,7 +150,7 @@ export const UpdateReviewController = async (req: Request, res: Response) => {
       return errorResponse(res, 'You can only update your own review', 403)
     }
 
-    const data = await UpdateReview(reviewId, userId, validation.data)
+    const data = await UpdateReview(reviewId, validation.data)
 
     return successResponse(res, 'Review updated successfully', data)
   } catch (error) {

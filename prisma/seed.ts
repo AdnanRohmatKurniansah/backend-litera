@@ -3,8 +3,7 @@ import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
-const PLACEHOLDER_IMAGE =
-  'https://placehold.co/800x1200'
+const PLACEHOLDER_IMAGE = 'https://placehold.co/800x1200'
 
 async function main() {
   const hashedPassword = await bcrypt.hash('admin123', 10)

@@ -94,10 +94,7 @@ export const GetBookByFilter = async (
     ]
 
     if (where.OR) {
-      where.AND = [
-        { OR: where.OR },
-        { OR: priceFilter }
-      ]
+      where.AND = [{ OR: where.OR }, { OR: priceFilter }]
       delete where.OR
     } else {
       where.OR = priceFilter
@@ -108,17 +105,11 @@ export const GetBookByFilter = async (
 
   switch (sortBy) {
     case 'price_low':
-      orderBy = [
-        { discount_price: 'asc' },
-        { price: 'asc' }
-      ]
+      orderBy = [{ discount_price: 'asc' }, { price: 'asc' }]
       break
 
     case 'price_high':
-      orderBy = [
-        { discount_price: 'desc' },
-        { price: 'desc' }
-      ]
+      orderBy = [{ discount_price: 'desc' }, { price: 'desc' }]
       break
 
     case 'newest':

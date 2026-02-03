@@ -10,6 +10,7 @@ import { OrderRoute } from '../routes/order.route'
 import { ArticleRoute } from '../routes/article.route'
 import { WishlistRoute } from '../routes/wishlist.route'
 import { ReviewRoute } from '../routes/review.route'
+import { StatsRoute } from '../routes/statistic.route'
 
 const createServer = () => {
   const app: Application = express()
@@ -47,6 +48,7 @@ const createServer = () => {
   app.use('/api/v1/address', AddressRoute)
   app.use('/api/v1/order', OrderRoute)
   app.use('/api/v1/review', ReviewRoute)
+  app.use('/api/v1/statistic', StatsRoute)
 
   // app.get('/api/protected', authenticate, (req: Request, res: Response) => {
   //   res.send('Welcome to the protected route')

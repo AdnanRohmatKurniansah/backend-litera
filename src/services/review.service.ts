@@ -105,7 +105,7 @@ export const CreateReview = async (userId: string, payload: CreateReviewType) =>
   })
 }
 
-export const UpdateReview = async (reviewId: string, userId: string, payload: UpdateReviewType) => {
+export const UpdateReview = async (reviewId: string, payload: UpdateReviewType) => {
   return await prisma.review.update({
     where: { id: reviewId },
     data: {

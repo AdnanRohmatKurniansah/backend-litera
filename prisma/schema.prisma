@@ -159,7 +159,6 @@ enum OrderStatus {
   Pending
   Paid
   Processing
-  Shipped
   Completed
   Cancelled
   Failed
@@ -167,6 +166,7 @@ enum OrderStatus {
 
 model Order {
   id String @id @default(auto()) @map("_id") @db.ObjectId
+  receipt_number String?
   userId String @db.ObjectId
   addressId String? @db.ObjectId
   status OrderStatus @default(Pending)

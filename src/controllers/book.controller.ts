@@ -72,16 +72,7 @@ export const GetBySlug = async (req: Request, res: Response) => {
 
 export const GetByFilter = async (req: Request, res: Response) => {
   try {
-    const {
-      keyword = '',
-      category,
-      language,
-      minPrice,
-      maxPrice,
-      page = 1,
-      sortBy = 'newest',
-      limit = 10
-    } = req.query
+    const { keyword = '', category, language, minPrice, maxPrice, page = 1, sortBy = 'newest', limit = 10 } = req.query
 
     const data = await GetBookByFilter(
       String(keyword),
@@ -107,7 +98,7 @@ export const GetByFilter = async (req: Request, res: Response) => {
 
 export const GetDiscounted = async (req: Request, res: Response) => {
   try {
-    const data  = await GetDiscountedBook(30)
+    const data = await GetDiscountedBook(30)
 
     return successResponse(res, "Discounted Book's Data", {
       data

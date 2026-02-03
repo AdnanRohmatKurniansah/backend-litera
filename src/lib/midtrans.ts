@@ -1,4 +1,4 @@
-import midtransClient from 'midtrans-client';
+import midtransClient from 'midtrans-client'
 
 export const snap = new midtransClient.Snap({
   clientKey: process.env.MIDTRANS_CLIENT_KEY!,

@@ -53,7 +53,7 @@ export const CheckoutService = async (userId: string, payload: CheckoutType) => 
   const prismaCourier = courierMap[payload.courier]
 
   const userAddress = await prisma.address.findUnique({
-    where: { 
+    where: {
       id: payload.addressId
     },
     include: {
@@ -87,20 +87,18 @@ export const CheckoutService = async (userId: string, payload: CheckoutType) => 
   let totalWeight = 0
   let subtotal = 0
 
-  cart.items.forEach(item => {
+  cart.items.forEach((item) => {
     totalWeight += item.book.weight * item.qty
     subtotal += item.book.price * item.qty
   })
 
   const shipping = await CalculateShippingCost({
-    destination: userAddress.city, 
+    destination: userAddress.city,
     weight: Math.ceil(totalWeight),
     courier: payload.courier
   })
 
-  const selectedService = shipping.data.find(
-    (s: any) => s.service === payload.service
-  )
+  const selectedService = shipping.data.find((s: any) => s.service === payload.service)
 
   if (!selectedService) {
     throw new Error('Shipping service not found')
@@ -133,7 +131,7 @@ export const CheckoutService = async (userId: string, payload: CheckoutType) => 
         total,
         note: payload.note,
         items: {
-          create: cart.items.map(item => ({
+          create: cart.items.map((item) => ({
             bookId: item.bookId,
             qty: item.qty,
             price: item.book.discount_price || item.book.price
@@ -154,7 +152,7 @@ export const CheckoutService = async (userId: string, payload: CheckoutType) => 
     await tx.payment.create({
       data: {
         orderId: createdOrder.id,
-        token: transaction.token,
+        token: transaction.token
       }
     })
 
@@ -170,4 +168,27 @@ export const CheckoutService = async (userId: string, payload: CheckoutType) => 
     snapToken: transaction.token,
     redirectUrl: transaction.redirect_url
   }
+}
+
+export const ProcessOrder = async (id: string, receipt_number: string) => {
+  return prisma.order.update({
+    where: {
+      id
+    },
+    data: {
+      receipt_number,
+      status: 'Processing'
+    }
+  })
+}
+
+export const ItemsArrived = async (id: string) => {
+  return prisma.order.update({
+    where: {
+      id
+    },
+    data: {
+      status: 'Completed'
+    }
+  })
 }

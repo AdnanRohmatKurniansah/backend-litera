@@ -1,6 +1,14 @@
 import { OrderStatus, PaymentStatus } from '@prisma/client'
 import { prisma } from '../lib/prisma'
-import { CalculateShippingCost, CheckoutService, DeleteOrder, GetAllOrder, GetOrder } from '../services/order.service'
+import {
+  CalculateShippingCost,
+  CheckoutService,
+  DeleteOrder,
+  GetAllOrder,
+  GetOrder,
+  ItemsArrived,
+  ProcessOrder
+} from '../services/order.service'
 import { UserToken } from '../types'
 import { errorResponse, logError, successResponse } from '../utils/response'
 import { CheckoutSchema, GetCostSchema } from '../validations/order.validation'
@@ -101,15 +109,8 @@ export const Checkout = async (req: Request, res: Response) => {
 
 export const PaymentCallback = async (req: Request, res: Response) => {
   try {
-    const { 
-      order_id, 
-      status_code, 
-      gross_amount, 
-      signature_key, 
-      transaction_status,
-      payment_type,
-      fraud_status 
-    } = req.body
+    const { order_id, status_code, gross_amount, signature_key, transaction_status, payment_type, fraud_status } =
+      req.body
 
     const serverKey = MIDTRANS_SERVER_KEY || ''
     const input = order_id + status_code + gross_amount + serverKey
@@ -137,8 +138,8 @@ export const PaymentCallback = async (req: Request, res: Response) => {
       return successResponse(res, 'Payment already processed')
     }
 
-    let orderStatus: OrderStatus = "Pending"
-    let paymentStatus: PaymentStatus = "Pending"
+    let orderStatus: OrderStatus = 'Pending'
+    let paymentStatus: PaymentStatus = 'Pending'
 
     if (transaction_status === 'capture') {
       if (fraud_status === 'accept') {
@@ -148,9 +149,7 @@ export const PaymentCallback = async (req: Request, res: Response) => {
     } else if (transaction_status === 'settlement') {
       orderStatus = OrderStatus.Paid
       paymentStatus = PaymentStatus.Paid
-    } else if (transaction_status === 'cancel' || 
-               transaction_status === 'deny' || 
-               transaction_status === 'expire') {
+    } else if (transaction_status === 'cancel' || transaction_status === 'deny' || transaction_status === 'expire') {
       orderStatus = OrderStatus.Failed
       paymentStatus = PaymentStatus.Failed
     } else if (transaction_status === 'pending') {
@@ -166,7 +165,7 @@ export const PaymentCallback = async (req: Request, res: Response) => {
 
       await tx.payment.update({
         where: { orderId: order_id },
-        data: { 
+        data: {
           status: paymentStatus,
           method: payment_type,
           paid_at: paymentStatus === 'Paid' ? new Date() : null
@@ -194,4 +193,53 @@ export const PaymentCallback = async (req: Request, res: Response) => {
   }
 }
 
+export const Process = async (req: Request, res: Response) => {
+  try {
+    const orderId = String(req.params.orderId)
 
+    const existOrder = await GetOrder(orderId)
+
+    if (!existOrder) {
+      return errorResponse(res, 'Order data not found', 404)
+    }
+
+    const createdAt = new Date(existOrder.created_at)
+
+    const day = String(createdAt.getDate()).padStart(2, '0')
+    const month = String(createdAt.getMonth() + 1).padStart(2, '0')
+    const year = String(createdAt.getFullYear()).slice(-2)
+
+    const receipt_number = `RS${day}${month}${year}${existOrder.id}`
+
+    const data = await ProcessOrder(existOrder.id, receipt_number)
+
+    return successResponse(res, 'Order has been processing', data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const Arrived = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as Request & { user: UserToken }).user.id
+    const orderId = String(req.params.orderId)
+
+    const order = await GetOrder(orderId)
+
+    if (!order) {
+      return errorResponse(res, 'Order not found', 404)
+    }
+
+    if (order.userId !== userId) {
+      return errorResponse(res, 'You can only update your own order', 403)
+    }
+
+    const data = await ItemsArrived(orderId)
+
+    return successResponse(res, 'Items has been arrived, Thankyou', data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
