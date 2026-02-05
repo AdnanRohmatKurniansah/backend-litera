@@ -19,14 +19,16 @@ const createServer = () => {
 
   app.use(express.json())
 
-  app.use(cors())
-
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', '*')
-    res.setHeader('Access-Control-Allow-Headers', '*')
-    next()
-  })
+  app.use(
+    cors({
+      origin: [
+        'http://localhost:5173',
+      ],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization']
+    })
+  )
 
   app.get('/', (req: Request, res: Response) => {
     res.status(200).json({
