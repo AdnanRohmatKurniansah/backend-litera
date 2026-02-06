@@ -19,23 +19,11 @@ const createServer = () => {
 
   app.use(express.json())
 
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
-  ]
-
   app.use(
     cors({
-      origin: (origin, callback) => {
-        if (!origin) return callback(null, true)
-
-        if (allowedOrigins.includes(origin)) {
-          return callback(null, true)
-        }
-
-        return callback(new Error('Not allowed by CORS'))
-      },
+      origin: [
+        'http://localhost:5174',
+      ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization']
