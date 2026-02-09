@@ -335,7 +335,7 @@ Authorization: Bearer {access_token}
 }
 ```
 
-**Response Error (401):**
+**Response Error (422):**
 ```json
 {
   "success": false,
@@ -700,7 +700,7 @@ Authorization: Bearer {access_token}
 }
 ```
 
-**Response Error (401):**
+**Response Error (422):**
 ```json
 {
   "success": false,
@@ -2138,7 +2138,7 @@ Authorization: Bearer {access_token}
 }
 ```
 
-**Response Error (401):**
+**Response Error (422):**
 ```json
 {
   "success": false,

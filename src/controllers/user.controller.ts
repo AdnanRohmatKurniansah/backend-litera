@@ -239,7 +239,7 @@ export const ChangePassword = async (req: Request, res: Response) => {
     const auth = await compare(requestData.old_password, user.password)
 
     if (!auth) {
-      return errorResponse(res, 'Current password is incorrect', 401)
+      return errorResponse(res, 'Current password is incorrect', 422)
     }
 
     const hashedPassword = await hash(requestData.new_password, 10)

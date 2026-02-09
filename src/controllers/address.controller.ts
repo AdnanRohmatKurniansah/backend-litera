@@ -120,7 +120,7 @@ export const Delete = async (req: Request, res: Response) => {
     }
 
     if (existAddress.is_primary) {
-      return errorResponse(res, 'Cant delete primary address', 401)
+      return errorResponse(res, 'Cant delete primary address', 422)
     }
 
     const deleted = await DeleteAddress(addressId)
