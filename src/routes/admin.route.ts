@@ -28,7 +28,7 @@ AdminRoute.post('/logout', checkRole(['Superadmin', 'Staff']), Logout)
 AdminRoute.use(checkRole(['Superadmin']))
 
 AdminRoute.get('/', GetAll)
-AdminRoute.put('/:adminId', GetById)
+AdminRoute.get('/:adminId', GetById)
 AdminRoute.post('/create', Create)
 AdminRoute.put('/update/:adminId', Update)
 AdminRoute.delete('/delete/:adminId', Delete)
