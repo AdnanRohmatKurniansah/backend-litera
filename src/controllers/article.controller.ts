@@ -7,6 +7,7 @@ import {
   DeleteArticle,
   GetAllArticle,
   GetArticle,
+  GetPublishedArticle,
   GetUniqueArticle,
   UpdateArticle
 } from '../services/article.service'
@@ -20,6 +21,25 @@ export const GetAll = async (req: Request, res: Response) => {
     const { data, total } = await GetAllArticle(page, limit)
 
     return successResponse(res, "Article's Data", {
+      data,
+      total,
+      page,
+      limit
+    })
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetPublished = async (req: Request, res: Response) => {
+  try {
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+
+    const { data, total } = await GetPublishedArticle(page, limit)
+
+    return successResponse(res, "Article Published", {
       data,
       total,
       page,

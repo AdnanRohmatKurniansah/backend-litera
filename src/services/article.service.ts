@@ -18,6 +18,35 @@ export const GetAllArticle = async (page: number, limit: number) => {
   return { data, total }
 }
 
+export const GetPublishedArticle = async (page: number, limit: number) => {
+  const offset = (page - 1) * limit
+  const now = new Date()
+
+  const [data, total] = await Promise.all([
+    prisma.articles.findMany({
+      where: {
+        published_at: {
+          gte: now
+        }
+      },
+      skip: offset,
+      take: limit,
+      orderBy: {
+        created_at: 'desc'
+      }
+    }),
+    prisma.articles.count({
+      where: {
+        published_at: {
+          gte: now
+        }
+      }
+    })
+  ])
+
+  return { data, total }
+}
+
 export const GetArticle = async (id: string) => {
   return await prisma.articles.findUnique({
     where: {
