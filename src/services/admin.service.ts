@@ -7,11 +7,11 @@ export const GetAllAdmin = async (currentAdminId: string, page: number, limit: n
   const [data, total] = await Promise.all([
     prisma.admin.findMany({
       where: {
-        NOT: {
-          id: currentAdminId
+        id: {
+          not: currentAdminId
         },
-        AND: {
-          role: 'Superadmin'
+        role: {
+          not: 'Superadmin'
         }
       },
       omit: {

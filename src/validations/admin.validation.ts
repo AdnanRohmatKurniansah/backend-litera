@@ -23,7 +23,7 @@ export const AdminLoginSchema = z.object({
 
 export const AdminProfileUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required').max(150).optional(),
-  phone: z.string().max(30, 'Max Character 30').optional()
+  phone: z.string().max(30, 'Max Character 30').nullable().optional()
 })
 
 export const AdminChangePasswordSchema = z.object({
