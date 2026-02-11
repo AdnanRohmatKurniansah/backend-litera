@@ -2874,7 +2874,7 @@ Authorization: Bearer {admin_access_token}
 ### Get Dashboard Overview
 Mendapatkan statistik overview untuk dashboard admin.
 
-**Endpoint:** `GET /stats/dashboard`
+**Endpoint:** `GET /statistic/dashboard`
 
 **Headers:**
 ```
@@ -2918,7 +2918,7 @@ Authorization: Bearer {admin_access_token}
 ### Get Order Statistics
 Mendapatkan statistik order berdasarkan status dan trend bulanan.
 
-**Endpoint:** `GET /stats/orders`
+**Endpoint:** `GET /statistic/orders`
 
 **Headers:**
 ```
@@ -2983,7 +2983,7 @@ Authorization: Bearer {admin_access_token}
 ### Get Top Selling Products
 Mendapatkan daftar produk terlaris.
 
-**Endpoint:** `GET /stats/top-products?limit=5`
+**Endpoint:** `GET /statistic/top-products?limit=5`
 
 **Headers:**
 ```
@@ -3032,7 +3032,7 @@ Authorization: Bearer {admin_access_token}
 ### Get Low Stock Books
 Mendapatkan daftar buku dengan stok rendah.
 
-**Endpoint:** `GET /stats/low-stock?threshold=10`
+**Endpoint:** `GET /statistic/low-stock?threshold=10`
 
 **Headers:**
 ```
