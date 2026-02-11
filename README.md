@@ -409,7 +409,7 @@ Authorization: Bearer {access_token}
 ### Get Admin By ID (Superadmin Only)
 Mendapatkan detail admin berdasarkan ID.
 
-**Endpoint:** `PUT /admin/:adminId`
+**Endpoint:** `GET /admin/:adminId`
 
 **Headers:**
 ```
