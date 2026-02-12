@@ -250,6 +250,19 @@ export const GetAllImages = async (req: Request, res: Response) => {
   }
 }
 
+export const GetImageById = async (req: Request, res: Response) => {
+  try {
+    const imageId = String(req.params.imageId)
+
+    const data = await GetBookImageById(imageId)
+
+    return successResponse(res, "Book's Image Detail Data", data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error')
+  }
+}
+
 export const CreateImage = async (req: Request, res: Response) => {
   try {
     const bookId = String(req.params.bookId)

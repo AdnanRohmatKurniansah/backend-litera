@@ -15,6 +15,7 @@ import {
   Update,
   UpdateImage
 } from '../controllers/book.controller'
+import { GetBookImageById } from '../services/book.service'
 
 export const BookRoute: Router = Router()
 
@@ -38,6 +39,8 @@ BookRoute.put(
 )
 BookRoute.delete('/delete/:bookId', Delete)
 
+
+BookRoute.get('/images/:imageId', GetBookImageById)
 BookRoute.post('/images/:bookId', upload.single('image_url'), CreateImage)
 BookRoute.put(
   '/images/update/:imageId',
