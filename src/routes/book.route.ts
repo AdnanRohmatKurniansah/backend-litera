@@ -40,7 +40,7 @@ BookRoute.put(
 BookRoute.delete('/delete/:bookId', Delete)
 
 
-BookRoute.get('/images/:imageId', GetBookImageById)
+BookRoute.get('/images/detail/:imageId', GetBookImageById)
 BookRoute.post('/images/:bookId', upload.single('image_url'), CreateImage)
 BookRoute.put(
   '/images/update/:imageId',
