@@ -23,6 +23,7 @@ const createServer = () => {
     cors({
       origin: [
         'http://localhost:5173',
+        'https://dash-litera.vercel.app',
       ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

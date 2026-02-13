@@ -25,7 +25,7 @@ ReviewRoute.get('/my-reviews', GetUserReviewsController)
 ReviewRoute.get('/:reviewId', GetReviewById)
 ReviewRoute.post('/create', CreateReviewController)
 ReviewRoute.put('/update/:reviewId', UpdateReviewController)
-ReviewRoute.delete('/delete/:reviewId', DeleteReviewController)
+ReviewRoute.delete('/delete/:reviewIdx', DeleteReviewController)
 
 // Protected routes - Admin
 ReviewRoute.use('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']))

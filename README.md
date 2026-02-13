@@ -1130,6 +1130,28 @@ Mendapatkan semua gambar dari sebuah buku.
 
 ---
 
+### Get Book Images By ID
+Mendapatkan detail buku images berdasarkan ID.
+
+**Endpoint:** `GET /book/images/detail/:bookId`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Book's Images Detail Data",
+  "data": {
+    "id": "507f1f77bcf86cd799439013",
+    "bookId": "507f1f77bcf86cd799439011",
+    "title": "Book Image 1",
+    "image_url": "https://cloudinary.com/book-image-1.jpg",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+---
+
 ### Create Book Image (Admin Only)
 Menambahkan gambar baru untuk buku.
 
