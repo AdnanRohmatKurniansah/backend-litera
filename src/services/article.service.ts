@@ -26,7 +26,7 @@ export const GetPublishedArticle = async (page: number, limit: number) => {
     prisma.articles.findMany({
       where: {
         published_at: {
-          gte: now
+          lte: now
         }
       },
       skip: offset,
@@ -38,7 +38,7 @@ export const GetPublishedArticle = async (page: number, limit: number) => {
     prisma.articles.count({
       where: {
         published_at: {
-          gte: now
+          lte: now
         }
       }
     })
