@@ -125,15 +125,20 @@ export const GetBookByFilter = async (
       break
   }
 
-  return await prisma.books.findMany({
-    where,
-    orderBy,
-    skip: offset,
-    take: limit,
-    include: {
-      category: true
-    }
-  })
+  const [data, total] = await Promise.all([
+    prisma.books.findMany({
+      where,
+      orderBy,
+      skip: offset,
+      take: limit,
+      include: {
+        category: true
+      }
+    }),
+    prisma.books.count({ where }) 
+  ])
+
+  return { data, total }
 }
 
 export const GetDiscountedBook = async (limit: number) => {
