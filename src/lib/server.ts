@@ -24,6 +24,7 @@ const createServer = () => {
       origin: [
         'http://localhost:5173',
         'https://dash-litera.vercel.app',
+        'https://litera-hazel.vercel.app',
       ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
