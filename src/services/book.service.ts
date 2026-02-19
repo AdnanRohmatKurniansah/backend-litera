@@ -107,11 +107,18 @@ export const GetBookByFilter = async (
     case 'price_low':
       orderBy = [{ discount_price: 'asc' }, { price: 'asc' }]
       break
-
     case 'price_high':
       orderBy = [{ discount_price: 'desc' }, { price: 'desc' }]
       break
-
+    case 'name_asc':
+      orderBy = [{ name: 'asc' }]
+      break
+    case 'name_desc':
+      orderBy = [{ name: 'desc' }]
+      break
+    case 'oldest':
+      orderBy = [{ created_at: 'desc' }]
+      break
     case 'newest':
     default:
       orderBy = [{ created_at: 'desc' }]
