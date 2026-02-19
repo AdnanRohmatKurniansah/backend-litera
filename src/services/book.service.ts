@@ -117,7 +117,7 @@ export const GetBookByFilter = async (
       orderBy = [{ name: 'desc' }]
       break
     case 'oldest':
-      orderBy = [{ created_at: 'desc' }]
+      orderBy = [{ created_at: 'asc' }]
       break
     case 'newest':
     default:
