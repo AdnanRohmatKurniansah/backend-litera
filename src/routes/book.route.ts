@@ -13,6 +13,7 @@ import {
   GetBySlug,
   GetDiscounted,
   GetImageById,
+  GetOther,
   Update,
   UpdateImage
 } from '../controllers/book.controller'
@@ -22,6 +23,7 @@ export const BookRoute: Router = Router()
 BookRoute.get('/', GetAll)
 BookRoute.get('/slug/:slug', GetBySlug)
 BookRoute.get('/filter', GetByFilter)
+BookRoute.get('/other/:bookId', GetOther)
 BookRoute.get('/discounted', GetDiscounted)
 BookRoute.get('/images/:bookId', GetAllImages)
 

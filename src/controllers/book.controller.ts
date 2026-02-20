@@ -12,6 +12,7 @@ import {
   GetBookImageById,
   GetBookImages,
   GetDiscountedBook,
+  GetOtherBook,
   GetUniqueBook,
   UpdateBook,
   UpdateBookImage
@@ -67,6 +68,27 @@ export const GetBySlug = async (req: Request, res: Response) => {
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetOther = async (req: Request, res: Response) => {
+  try {
+    const bookId = String(req.params.bookId)
+
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+
+    const { data, total } = await GetOtherBook(bookId, page, limit)
+
+    return successResponse(res, "Related Books Data", {
+      data,
+      total,
+      page,
+      limit
+    })
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error')
   }
 }
 

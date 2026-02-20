@@ -34,6 +34,36 @@ export const GetUniqueBook = async (slug: string) => {
   })
 }
 
+export const GetOtherBook = async (
+  bookId: string,
+  page: number,
+  limit: number
+) => {
+  const offset = (page - 1) * limit
+
+  const whereCondition = {
+    NOT: {
+      id: bookId
+    }
+  }
+
+  const [data, total] = await Promise.all([
+    prisma.books.findMany({
+      where: whereCondition,
+      skip: offset,
+      take: limit,
+      orderBy: {
+        created_at: 'desc'
+      }
+    }),
+    prisma.books.count({
+      where: whereCondition
+    })
+  ])
+
+  return { data, total }
+}
+
 export const GetBookByFilter = async (
   keyword: string,
   categorySlug: string,
