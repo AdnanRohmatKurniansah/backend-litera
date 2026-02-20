@@ -1,3 +1,4 @@
+import { error } from 'node:console'
 import { prisma } from '../lib/prisma'
 import { BookDto, BookImageDto } from '../types'
 
@@ -41,7 +42,14 @@ export const GetOtherBook = async (
 ) => {
   const offset = (page - 1) * limit
 
+  const currentBook = await GetBook(bookId)
+
+  if (!currentBook) {
+    throw error("Book not found")
+  }
+
   const whereCondition = {
+    categoryId: currentBook.categoryId,
     NOT: {
       id: bookId
     }
