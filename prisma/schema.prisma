@@ -238,7 +238,9 @@ model Address {
   name String
   phone String
   province String
+  city_id String
   city String
+  district_id String
   district String
   street String
   zip String

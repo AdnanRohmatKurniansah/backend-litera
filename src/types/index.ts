@@ -82,7 +82,9 @@ export type AddressDto = {
   name: string
   phone: string
   province: string
+  city_id: string
   city: string
+  district_id: string
   district: string
   street: string
   zip: string

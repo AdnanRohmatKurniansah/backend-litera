@@ -3,6 +3,7 @@ import { UserToken } from '../types'
 import { CreateNew, DeleteAddress, GetAddressById, GetAddressByUser, UpdateAddress } from '../services/address.service'
 import { errorResponse, logError, successResponse } from '../utils/response'
 import { AddressCreateSchema, AddressUpdateSchema } from '../validations/address.validation'
+import { rajaOngkir } from '../lib/rajaongkir'
 
 export const GetAll = async (req: Request, res: Response) => {
   try {
@@ -126,6 +127,38 @@ export const Delete = async (req: Request, res: Response) => {
     const deleted = await DeleteAddress(addressId)
 
     return successResponse(res, 'Address has been deleted', deleted)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetProvinces = async (req: Request, res: Response) => {
+  try {
+    const { data } = await rajaOngkir.get("/destination/province")
+    return successResponse(res, 'Provinces data retrieved', data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetCities = async (req: Request, res: Response) => {
+  try {
+    const { provinceId } = req.params
+    const { data } = await rajaOngkir.get(`/destination/city/${provinceId}`)
+    return successResponse(res, 'Cities data retrieved', data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetDistricts = async (req: Request, res: Response) => {
+  try {
+    const { cityId } = req.params
+    const { data } = await rajaOngkir.get(`/destination/district/${cityId}`)
+    return successResponse(res, 'Districts data retrieved', data)
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)
