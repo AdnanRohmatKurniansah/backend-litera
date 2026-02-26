@@ -237,6 +237,7 @@ model Address {
   userId String @db.ObjectId
   name String
   phone String
+  province_id String
   province String
   city_id String
   city String

@@ -81,6 +81,7 @@ export type BookImageDto = {
 export type AddressDto = {
   name: string
   phone: string
+  province_id: string
   province: string
   city_id: string
   city: string
