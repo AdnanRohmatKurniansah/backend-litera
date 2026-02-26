@@ -13,6 +13,7 @@ import {
   GetBookImages,
   GetDiscountedBook,
   GetOtherBook,
+  GetRecommendedBooks,
   GetUniqueBook,
   UpdateBook,
   UpdateBookImage
@@ -89,6 +90,19 @@ export const GetOther = async (req: Request, res: Response) => {
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error')
+  }
+}
+
+export const GetRecommended = async (req: Request, res: Response) => {
+  try {
+    const limit = Number(req.query.limit || 10)
+
+    const data = await GetRecommendedBooks(limit)
+
+    return successResponse(res, "Recommended Books Data", { data })
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
   }
 }
 

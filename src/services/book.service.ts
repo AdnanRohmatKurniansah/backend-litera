@@ -72,6 +72,16 @@ export const GetOtherBook = async (
   return { data, total }
 }
 
+export const GetRecommendedBooks = async (limit: number) => {
+  const total = await prisma.books.count()
+  const skip = Math.max(0, Math.floor(Math.random() * total) - limit)
+
+  return await prisma.books.findMany({
+    take: limit,
+    skip,
+  })
+}
+
 export const GetBookByFilter = async (
   keyword: string,
   categorySlug: string,
