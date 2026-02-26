@@ -30,7 +30,7 @@ export const Create = async (req: Request, res: Response) => {
 
     const existAddress = await GetAddressByUser(userId)
 
-    if (!existAddress) {
+    if (existAddress.length === 0) {
       validation.data.is_primary = true
     }
 
