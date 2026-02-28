@@ -20,7 +20,7 @@ import {
 import { UserToken } from '../types'
 import { deleteFromCloudinary, uploadToCloudinary } from '../lib/cloudinary'
 import { generateNameFromEmail } from '../utils/help-func'
-import { verifyGoogleToken } from '../lib/google-auth'
+import { verifyGoogleAccessToken, verifyGoogleToken } from '../lib/google-auth'
 import crypto from 'crypto'
 
 export const Register = async (req: Request, res: Response) => {
@@ -97,13 +97,13 @@ export const Login = async (req: Request, res: Response) => {
 
 export const GoogleLogin = async (req: Request, res: Response) => {
   try {
-    const { id_token } = req.body
+    const { access_token } = req.body 
 
-    if (!id_token) {
-      return errorResponse(res, 'Google token is required', 400)
+    if (!access_token) {
+      return errorResponse(res, 'Google access token is required', 400)
     }
 
-    const googleUser = await verifyGoogleToken(id_token)
+    const googleUser = await verifyGoogleAccessToken(access_token)
 
     let user = await GetUniqueUser(googleUser.email)
 
@@ -117,7 +117,7 @@ export const GoogleLogin = async (req: Request, res: Response) => {
       })
     }
 
-    const access_token = UserAccessToken({
+    const token = UserAccessToken({
       id: user.id,
       name: user.name,
       email: user.email,
@@ -126,9 +126,7 @@ export const GoogleLogin = async (req: Request, res: Response) => {
       tokenVersion: user.tokenVersion
     })
 
-    return successResponse(res, 'Login with Google successfully', {
-      access_token
-    })
+    return successResponse(res, 'Login with Google successfully', { access_token: token })
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Google login failed', 500)
