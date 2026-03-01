@@ -12,7 +12,9 @@ export const CheckoutSchema = z.object({
   addressId: z.string().min(1, 'Address Id is required'),
   courier: z.enum(['jne', 'pos', 'tiki', 'jnt', 'sicepat', 'ninja']),
   service: z.string().min(1, 'Service is required'),
-  note: z.string().optional()
+  note: z.string().optional(),
+  itemIds: z.array(z.string()).optional()
 })
 
 export type CheckoutType = z.infer<typeof CheckoutSchema>
+

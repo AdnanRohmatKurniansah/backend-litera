@@ -2,10 +2,12 @@ import { OrderStatus, PaymentStatus } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import {
   CalculateShippingCost,
+  CancelOrder,
   CheckoutService,
   DeleteOrder,
   GetAllOrder,
   GetOrder,
+  GetUserOrders,
   ItemsArrived,
   ProcessOrder
 } from '../services/order.service'
@@ -23,12 +25,22 @@ export const GetAll = async (req: Request, res: Response) => {
 
     const { data, total } = await GetAllOrder(page, limit)
 
-    return successResponse(res, "Order's Data", {
-      data,
-      total,
-      page,
-      limit
-    })
+    return successResponse(res, "Order's Data", { data, total, page, limit })
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const GetMyOrders = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as Request & { user: UserToken }).user.id
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+
+    const { data, total } = await GetUserOrders(userId, page, limit)
+
+    return successResponse(res, "My Orders", { data, total, page, limit })
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)
@@ -38,9 +50,7 @@ export const GetAll = async (req: Request, res: Response) => {
 export const GetById = async (req: Request, res: Response) => {
   try {
     const orderId = String(req.params.orderId)
-
     const data = await GetOrder(orderId)
-
     return successResponse(res, "Order's Detail Data", data)
   } catch (error) {
     logError(error)
@@ -53,13 +63,9 @@ export const Delete = async (req: Request, res: Response) => {
     const orderId = String(req.params.orderId)
 
     const existOrder = await GetOrder(orderId)
-
-    if (!existOrder) {
-      return errorResponse(res, 'Order data not found', 404)
-    }
+    if (!existOrder) return errorResponse(res, 'Order data not found', 404)
 
     const response = await DeleteOrder(orderId)
-
     return successResponse(res, 'Order data deleted successfully', response)
   } catch (error) {
     logError(error)
@@ -67,10 +73,27 @@ export const Delete = async (req: Request, res: Response) => {
   }
 }
 
+export const Cancel = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as Request & { user: UserToken }).user.id
+    const orderId = String(req.params.orderId)
+
+    const data = await CancelOrder(orderId, userId)
+    return successResponse(res, 'Order cancelled successfully', data)
+  } catch (error) {
+    logError(error)
+    if (error instanceof Error) {
+      if (error.message === 'Unauthorized') return errorResponse(res, error.message, 403)
+      if (error.message === 'Order not found') return errorResponse(res, error.message, 404)
+      if (error.message.includes('cannot be cancelled')) return errorResponse(res, error.message, 400)
+    }
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
 export const GetShippingCost = async (req: Request, res: Response) => {
   try {
     const requestData = await req.body
-
     const validationData = GetCostSchema.safeParse(requestData)
 
     if (!validationData.success) {
@@ -78,7 +101,6 @@ export const GetShippingCost = async (req: Request, res: Response) => {
     }
 
     const data = await CalculateShippingCost(validationData.data)
-
     return successResponse(res, 'Shipping cost retrieved', data)
   } catch (error) {
     logError(error)
@@ -89,9 +111,7 @@ export const GetShippingCost = async (req: Request, res: Response) => {
 export const Checkout = async (req: Request, res: Response) => {
   try {
     const userId = (req as Request & { user: UserToken }).user.id
-
     const requestData = await req.body
-
     const validation = CheckoutSchema.safeParse(requestData)
 
     if (!validation.success) {
@@ -99,7 +119,6 @@ export const Checkout = async (req: Request, res: Response) => {
     }
 
     const data = await CheckoutService(userId, validation.data)
-
     return successResponse(res, 'Checkout success', data)
   } catch (error) {
     logError(error)
@@ -109,8 +128,15 @@ export const Checkout = async (req: Request, res: Response) => {
 
 export const PaymentCallback = async (req: Request, res: Response) => {
   try {
-    const { order_id, status_code, gross_amount, signature_key, transaction_status, payment_type, fraud_status } =
-      req.body
+    const {
+      order_id,
+      status_code,
+      gross_amount,
+      signature_key,
+      transaction_status,
+      payment_type,
+      fraud_status
+    } = req.body
 
     const serverKey = MIDTRANS_SERVER_KEY || ''
     const input = order_id + status_code + gross_amount + serverKey
@@ -124,15 +150,11 @@ export const PaymentCallback = async (req: Request, res: Response) => {
       where: { id: order_id },
       include: {
         payment: true,
-        items: {
-          include: { book: true }
-        }
+        items: { include: { book: true } }
       }
     })
 
-    if (!existingOrder) {
-      return errorResponse(res, 'Order not found', 404)
-    }
+    if (!existingOrder) return errorResponse(res, 'Order not found', 404)
 
     if (existingOrder.payment?.status === 'Paid') {
       return successResponse(res, 'Payment already processed')
@@ -149,7 +171,11 @@ export const PaymentCallback = async (req: Request, res: Response) => {
     } else if (transaction_status === 'settlement') {
       orderStatus = OrderStatus.Paid
       paymentStatus = PaymentStatus.Paid
-    } else if (transaction_status === 'cancel' || transaction_status === 'deny' || transaction_status === 'expire') {
+    } else if (
+      transaction_status === 'cancel' ||
+      transaction_status === 'deny' ||
+      transaction_status === 'expire'
+    ) {
       orderStatus = OrderStatus.Failed
       paymentStatus = PaymentStatus.Failed
     } else if (transaction_status === 'pending') {
@@ -174,10 +200,6 @@ export const PaymentCallback = async (req: Request, res: Response) => {
 
       if (paymentStatus === 'Paid') {
         for (const item of existingOrder.items) {
-          const book = await tx.books.findUnique({
-            where: { id: item.bookId }
-          })
-
           await tx.books.update({
             where: { id: item.bookId },
             data: { qty: { decrement: item.qty } }
@@ -196,15 +218,11 @@ export const PaymentCallback = async (req: Request, res: Response) => {
 export const Process = async (req: Request, res: Response) => {
   try {
     const orderId = String(req.params.orderId)
-
     const existOrder = await GetOrder(orderId)
 
-    if (!existOrder) {
-      return errorResponse(res, 'Order data not found', 404)
-    }
+    if (!existOrder) return errorResponse(res, 'Order data not found', 404)
 
     const createdAt = new Date(existOrder.created_at)
-
     const day = String(createdAt.getDate()).padStart(2, '0')
     const month = String(createdAt.getMonth() + 1).padStart(2, '0')
     const year = String(createdAt.getFullYear()).slice(-2)
@@ -212,7 +230,6 @@ export const Process = async (req: Request, res: Response) => {
     const receipt_number = `RS${day}${month}${year}${existOrder.id}`
 
     const data = await ProcessOrder(existOrder.id, receipt_number)
-
     return successResponse(res, 'Order has been processing', data)
   } catch (error) {
     logError(error)
@@ -226,17 +243,10 @@ export const Arrived = async (req: Request, res: Response) => {
     const orderId = String(req.params.orderId)
 
     const order = await GetOrder(orderId)
-
-    if (!order) {
-      return errorResponse(res, 'Order not found', 404)
-    }
-
-    if (order.userId !== userId) {
-      return errorResponse(res, 'You can only update your own order', 403)
-    }
+    if (!order) return errorResponse(res, 'Order not found', 404)
+    if (order.userId !== userId) return errorResponse(res, 'You can only update your own order', 403)
 
     const data = await ItemsArrived(orderId)
-
     return successResponse(res, 'Items has been arrived, Thankyou', data)
   } catch (error) {
     logError(error)

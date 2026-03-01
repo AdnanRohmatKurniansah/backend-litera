@@ -2,10 +2,12 @@ import { Router } from 'express'
 import { userAuthenticate } from '../middlewares/user.auth'
 import {
   Arrived,
+  Cancel,
   Checkout,
   Delete,
   GetAll,
   GetById,
+  GetMyOrders,
   GetShippingCost,
   PaymentCallback,
   Process
@@ -19,9 +21,11 @@ OrderRoute.post('/callback', PaymentCallback)
 // Protected Routes User
 OrderRoute.use(userAuthenticate)
 
+OrderRoute.get('/my-orders', GetMyOrders)
 OrderRoute.post('/cost', GetShippingCost)
 OrderRoute.post('/checkout', Checkout)
-OrderRoute.get('/arrived/:orderId', Arrived)
+OrderRoute.put('/arrived/:orderId', Arrived)
+OrderRoute.put('/cancel/:orderId', Cancel)
 
 // Protected Routes Admin
 OrderRoute.use(adminAuthenticate, checkRole(['Superadmin', 'Staff']))
