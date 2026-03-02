@@ -26,5 +26,5 @@ OrderRoute.put('/cancel/:orderId', userAuthenticate, Cancel)
 
 OrderRoute.get('/', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetAll)
 OrderRoute.get('/detail/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetById)
-OrderRoute.get('/process/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), Process)
+OrderRoute.put('/process/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), Process)
 OrderRoute.delete('/delete/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), Delete)
