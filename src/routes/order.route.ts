@@ -18,19 +18,13 @@ export const OrderRoute: Router = Router()
 
 OrderRoute.post('/callback', PaymentCallback)
 
-// Protected Routes User
-OrderRoute.use(userAuthenticate)
+OrderRoute.get('/my-orders', userAuthenticate, GetMyOrders)
+OrderRoute.post('/cost', userAuthenticate, GetShippingCost)
+OrderRoute.post('/checkout', userAuthenticate, Checkout)
+OrderRoute.put('/arrived/:orderId', userAuthenticate, Arrived)
+OrderRoute.put('/cancel/:orderId', userAuthenticate, Cancel)
 
-OrderRoute.get('/my-orders', GetMyOrders)
-OrderRoute.post('/cost', GetShippingCost)
-OrderRoute.post('/checkout', Checkout)
-OrderRoute.put('/arrived/:orderId', Arrived)
-OrderRoute.put('/cancel/:orderId', Cancel)
-
-// Protected Routes Admin
-OrderRoute.use(adminAuthenticate, checkRole(['Superadmin', 'Staff']))
-
-OrderRoute.get('/', GetAll)
-OrderRoute.get('/detail/:orderId', GetById)
-OrderRoute.get('/process/:orderId', Process)
-OrderRoute.delete('/delete/:orderId', Delete)
+OrderRoute.get('/', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetAll)
+OrderRoute.get('/detail/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetById)
+OrderRoute.get('/process/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), Process)
+OrderRoute.delete('/delete/:orderId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), Delete)

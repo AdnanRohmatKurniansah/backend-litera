@@ -12,9 +12,16 @@ export const GetAllOrder = async (page: number, limit: number) => {
     prisma.order.findMany({
       skip: offset,
       take: limit,
+      include: {
+        items: { include: { book: true } },
+        payment: true,
+        shipping: true,
+        address: true,
+        user: true
+      },
       orderBy: {
         created_at: 'desc'
-      }
+      },
     }),
     prisma.order.count()
   ])
