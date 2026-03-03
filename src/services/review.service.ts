@@ -15,7 +15,17 @@ export const GetBookReviews = async (bookId: string, page: number, limit: number
           select: {
             id: true,
             name: true,
+            email: true,
             profile: true
+          }
+        },
+        book: {
+          select: {
+            id: true,
+            name: true,
+            author: true,
+            slug: true,
+            image_url: true
           }
         }
       }
@@ -36,7 +46,23 @@ export const GetUserReviews = async (userId: string, page: number, limit: number
       take: limit,
       orderBy: { created_at: 'desc' },
       include: {
-        book: true
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profile: true
+          }
+        },
+        book: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            author: true,
+            image_url: true
+          }
+        }
       }
     }),
     prisma.review.count({ where: { userId } })
@@ -62,6 +88,7 @@ export const GetReview = async (id: string) => {
           id: true,
           name: true,
           slug: true,
+          author: true,
           image_url: true
         }
       }
@@ -76,22 +103,6 @@ export const CreateReview = async (userId: string, payload: CreateReviewType) =>
       bookId: payload.bookId,
       rating: payload.rating,
       comment: payload.comment
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          profile: true
-        }
-      },
-      book: {
-        select: {
-          id: true,
-          name: true,
-          slug: true
-        }
-      }
     }
   })
 }
@@ -102,15 +113,6 @@ export const UpdateReview = async (reviewId: string, payload: UpdateReviewType) 
     data: {
       rating: payload.rating,
       comment: payload.comment
-    },
-    include: {
-      book: {
-        select: {
-          id: true,
-          name: true,
-          slug: true
-        }
-      }
     }
   })
 }
@@ -130,7 +132,23 @@ export const AdminGetUserReviews = async (page: number, limit: number) => {
       take: limit,
       orderBy: { created_at: 'desc' },
       include: {
-        book: true
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profile: true
+          }
+        },
+        book: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            author: true,
+            image_url: true
+          }
+        }
       }
     }),
     prisma.review.count()
