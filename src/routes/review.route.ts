@@ -19,15 +19,17 @@ export const ReviewRoute: Router = Router()
 ReviewRoute.get('/book/:bookId', GetBookReviewsController)
 ReviewRoute.get('/book/:bookId/rating', GetBookRating)
 
-// Protected routes - User
 
 ReviewRoute.get('/my-reviews', userAuthenticate, GetUserReviewsController)
-ReviewRoute.get('/:reviewId', userAuthenticate, GetReviewById)
+
+ReviewRoute.get('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminGetUserReviewsController)
+
 ReviewRoute.post('/create', userAuthenticate, CreateReviewController)
+
+ReviewRoute.get('/:reviewId', userAuthenticate, GetReviewById)
 ReviewRoute.put('/update/:reviewId', userAuthenticate, UpdateReviewController)
 ReviewRoute.delete('/delete/:reviewIdx', userAuthenticate, DeleteReviewController)
 
-// Protected routes - Admin
 
-ReviewRoute.get('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminGetUserReviewsController)
+ReviewRoute.get('/admin/detail/reviewId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetReviewById)
 ReviewRoute.delete('/admin/delete/:reviewId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminDeleteReviewController)
