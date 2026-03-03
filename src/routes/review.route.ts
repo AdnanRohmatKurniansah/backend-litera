@@ -9,7 +9,8 @@ import {
   UpdateReviewController,
   DeleteReviewController,
   AdminDeleteReviewController,
-  GetBookRating
+  GetBookRating,
+  AdminGetUserReviewsController
 } from '../controllers/review.controller'
 
 export const ReviewRoute: Router = Router()
@@ -19,15 +20,14 @@ ReviewRoute.get('/book/:bookId', GetBookReviewsController)
 ReviewRoute.get('/book/:bookId/rating', GetBookRating)
 
 // Protected routes - User
-ReviewRoute.use(userAuthenticate)
 
-ReviewRoute.get('/my-reviews', GetUserReviewsController)
-ReviewRoute.get('/:reviewId', GetReviewById)
-ReviewRoute.post('/create', CreateReviewController)
-ReviewRoute.put('/update/:reviewId', UpdateReviewController)
-ReviewRoute.delete('/delete/:reviewIdx', DeleteReviewController)
+ReviewRoute.get('/my-reviews', userAuthenticate, GetUserReviewsController)
+ReviewRoute.get('/:reviewId', userAuthenticate, GetReviewById)
+ReviewRoute.post('/create', userAuthenticate, CreateReviewController)
+ReviewRoute.put('/update/:reviewId', userAuthenticate, UpdateReviewController)
+ReviewRoute.delete('/delete/:reviewIdx', userAuthenticate, DeleteReviewController)
 
 // Protected routes - Admin
-ReviewRoute.use('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']))
 
-ReviewRoute.delete('/admin/delete/:reviewId', AdminDeleteReviewController)
+ReviewRoute.get('/admin/review', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminGetUserReviewsController)
+ReviewRoute.delete('/admin/delete/:reviewId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminDeleteReviewController)

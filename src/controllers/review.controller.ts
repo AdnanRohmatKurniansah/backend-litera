@@ -13,6 +13,7 @@ import { CreateReviewSchema, UpdateReviewSchema } from '../validations/review.va
 import { errorResponse, logError, successResponse } from '../utils/response'
 import { UserToken } from '../types'
 import { prisma } from '../lib/prisma'
+import { AdminGetUserReviews } from '../services/review.service';
 
 export const GetBookReviewsController = async (req: Request, res: Response) => {
   try {
@@ -179,6 +180,25 @@ export const DeleteReviewController = async (req: Request, res: Response) => {
     const data = await DeleteReview(reviewId, userId)
 
     return successResponse(res, 'Review deleted successfully', data)
+  } catch (error) {
+    logError(error)
+    return errorResponse(res, 'Internal server error', 500)
+  }
+}
+
+export const AdminGetUserReviewsController = async (req: Request, res: Response) => {
+  try {
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+
+    const { data, total } = await AdminGetUserReviews(page, limit)
+
+    return successResponse(res, 'Users data review', {
+      data,
+      total,
+      page,
+      limit
+    })
   } catch (error) {
     logError(error)
     return errorResponse(res, 'Internal server error', 500)

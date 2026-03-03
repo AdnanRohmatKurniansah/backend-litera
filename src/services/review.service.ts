@@ -36,16 +36,7 @@ export const GetUserReviews = async (userId: string, page: number, limit: number
       take: limit,
       orderBy: { created_at: 'desc' },
       include: {
-        book: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            image_url: true,
-            price: true,
-            discount_price: true
-          }
-        }
+        book: true
       }
     }),
     prisma.review.count({ where: { userId } })
@@ -128,6 +119,24 @@ export const DeleteReview = async (reviewId: string, userId: string) => {
   return await prisma.review.delete({
     where: { id: reviewId }
   })
+}
+
+export const AdminGetUserReviews = async (page: number, limit: number) => {
+  const offset = (page - 1) * limit
+
+  const [data, total] = await Promise.all([
+    prisma.review.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        book: true
+      }
+    }),
+    prisma.review.count()
+  ])
+
+  return { data, total }
 }
 
 export const AdminDeleteReview = async (reviewId: string) => {
