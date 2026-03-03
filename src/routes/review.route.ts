@@ -29,5 +29,5 @@ ReviewRoute.delete('/delete/:reviewIdx', userAuthenticate, DeleteReviewControlle
 
 // Protected routes - Admin
 
-ReviewRoute.get('/admin/review', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminGetUserReviewsController)
+ReviewRoute.get('/admin', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminGetUserReviewsController)
 ReviewRoute.delete('/admin/delete/:reviewId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), AdminDeleteReviewController)
