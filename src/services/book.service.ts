@@ -204,9 +204,10 @@ export const GetBookByFilter = async (
 export const GetDiscountedBook = async (limit: number) => {
   return await prisma.books.findMany({
     where: {
-      discount_price: {
-        not: null
-      }
+      AND: [
+        { discount_price: { not: null } },
+        { discount_price: { not: 0 } },
+      ]
     },
     orderBy: {
       created_at: 'desc'
