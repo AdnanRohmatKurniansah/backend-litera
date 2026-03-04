@@ -177,7 +177,7 @@ export const DeleteReviewController = async (req: Request, res: Response) => {
       return errorResponse(res, 'You can only update your own review', 403)
     }
 
-    const data = await DeleteReview(reviewId, userId)
+    const data = await DeleteReview(reviewId)
 
     return successResponse(res, 'Review deleted successfully', data)
   } catch (error) {

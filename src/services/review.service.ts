@@ -117,7 +117,7 @@ export const UpdateReview = async (reviewId: string, payload: UpdateReviewType) 
   })
 }
 
-export const DeleteReview = async (reviewId: string, userId: string) => {
+export const DeleteReview = async (reviewId: string) => {
   return await prisma.review.delete({
     where: { id: reviewId }
   })

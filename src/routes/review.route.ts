@@ -28,7 +28,7 @@ ReviewRoute.post('/create', userAuthenticate, CreateReviewController)
 
 ReviewRoute.get('/:reviewId', userAuthenticate, GetReviewById)
 ReviewRoute.put('/update/:reviewId', userAuthenticate, UpdateReviewController)
-ReviewRoute.delete('/delete/:reviewIdx', userAuthenticate, DeleteReviewController)
+ReviewRoute.delete('/delete/:reviewId', userAuthenticate, DeleteReviewController)
 
 
 ReviewRoute.get('/admin/detail/reviewId', adminAuthenticate, checkRole(['Superadmin', 'Staff']), GetReviewById)
