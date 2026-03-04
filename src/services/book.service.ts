@@ -109,7 +109,19 @@ export const GetBookByFilter = async (
           contains: keyword,
           mode: 'insensitive'
         }
-      }
+      },
+      {
+        author: {
+          contains: keyword,
+          mode: 'insensitive'
+        }
+      },
+      {
+        publisher: {
+          contains: keyword,
+          mode: 'insensitive'
+        }
+      },
     ]
   }
 
