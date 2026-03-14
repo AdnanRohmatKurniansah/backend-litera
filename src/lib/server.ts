@@ -11,8 +11,14 @@ import { ArticleRoute } from '../routes/article.route'
 import { WishlistRoute } from '../routes/wishlist.route'
 import { ReviewRoute } from '../routes/review.route'
 import { StatsRoute } from '../routes/statistic.route'
+import fs from 'fs'
+import path from 'path'
+import swaggerUi from 'swagger-ui-express'
 
 const createServer = () => {
+  const swaggerFile = fs.readFileSync(path.join(__dirname, '../../docs/swagger.json'), 'utf-8')
+  const swaggerDocument = JSON.parse(swaggerFile)
+
   const app: Application = express()
 
   app.use(express.urlencoded({ extended: false }))
@@ -29,6 +35,16 @@ const createServer = () => {
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization']
+    })
+  )
+
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument, {
+      swaggerOptions: {
+        persistAuthorization: true
+      }
     })
   )
 

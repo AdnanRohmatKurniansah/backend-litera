@@ -33,8 +33,9 @@ http://localhost:{PORT}/api/v1
 8. [Wishlist](#wishlist)
 9. [Address](#address)
 10. [Orders](#orders)
+11. [Dashboard Statistics](#dashboard-statistics-admin-only)
 12. [Reviews](#reviews)
-11. [Error Responses](#error-responses)
+13. [Error Responses](#error-responses)
 
 ---
 
@@ -1269,6 +1270,39 @@ Authorization: Bearer {access_token}
 
 ---
 
+
+---
+
+### Get Recommended Books
+Mendapatkan daftar buku yang direkomendasikan.
+
+**Endpoint:** `GET /book/recommended`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Recommended books",
+  "data": [ ... ]
+}
+```
+
+---
+
+### Get Other Books
+Mendapatkan daftar buku lainnya sebagai referensi atau terkait.
+
+**Endpoint:** `GET /book/other/:bookId`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Other books",
+  "data": [ ... ]
+}
+```
+
 ## Categories
 
 ### Get All Categories
@@ -1510,6 +1544,23 @@ Mendapatkan daftar semua artikel dengan pagination.
 ```
 
 ---
+
+
+---
+
+### Get Published Articles
+Mendapatkan daftar artikel yang sudah di-publish.
+
+**Endpoint:** `GET /article/published`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Published articles",
+  "data": [ ... ]
+}
+```
 
 ### Get Article By ID
 Mendapatkan detail artikel berdasarkan ID.
@@ -1924,6 +1975,101 @@ Authorization: Bearer {access_token}
 
 ## Address
 
+
+---
+
+### Get Provinces
+Mendapatkan daftar seluruh provinsi (RajaOngkir).
+
+**Endpoint:** `GET /address/province`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Provinces data",
+  "data": [ ... ]
+}
+```
+
+---
+
+### Get Cities By Province
+Mendapatkan daftar kota berdasarkan ID provinsi.
+
+**Endpoint:** `GET /address/city/:provinceId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Cities data",
+  "data": [ ... ]
+}
+```
+
+---
+
+### Get Districts By City
+Mendapatkan daftar kecamatan berdasarkan ID kota.
+
+**Endpoint:** `GET /address/district/:cityId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Districts data",
+  "data": [ ... ]
+}
+```
+
+---
+
+### Calculate Shipping Cost
+Menghitung estimasi biaya pengiriman.
+
+**Endpoint:** `POST /address/cost`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "origin": "501",
+  "destination": "114",
+  "weight": 1700,
+  "courier": "jne"
+}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Shipping cost calculated",
+  "data": [ ... ]
+}
+```
+
 ### Get User Addresses
 Mendapatkan semua alamat user.
 
@@ -2179,6 +2325,48 @@ Authorization: Bearer {access_token}
 ---
 
 ## Orders
+
+
+---
+
+### Get My Orders
+Mendapatkan daftar order milik user yang login.
+
+**Endpoint:** `GET /order/my-orders`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "User orders",
+  "data": [ ... ]
+}
+```
+
+---
+
+### Cancel Order
+User membatalkan orderan sendiri.
+
+**Endpoint:** `PUT /order/cancel/:orderId`
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Order has been cancelled"
+}
+```
 
 ### Get All Orders (Admin Only)
 Mendapatkan semua order dengan pagination.
@@ -2862,6 +3050,46 @@ Authorization: Bearer {access_token}
 ---
 
 ### Delete Review (Admin Only)
+---
+
+### Get Book Rating
+Mendapatkan informasi summary rating dari sebuah buku.
+
+**Endpoint:** `GET /review/book/:bookId/rating`
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Book rating summary",
+  "data": {
+    "average": 4.5,
+    "total": 120
+  }
+}
+```
+
+---
+
+### Get Review By ID (Admin Only)
+Admin mendapatkan detail review user berdasarkan ID.
+
+**Endpoint:** `GET /review/admin/detail/:reviewId`
+
+**Headers:**
+```
+Authorization: Bearer {admin_access_token}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Review detail",
+  "data": { ... }
+}
+```
+
 Admin menghapus review apapun.
 
 **Endpoint:** `DELETE /reviews/admin/delete/:reviewId`

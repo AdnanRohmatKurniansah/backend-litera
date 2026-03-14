@@ -23,6 +23,7 @@
     /* Type Checking */
     "strict": true,
     "noImplicitAny": true,
+    "types": ["jest", "node"],
     
     /* Completeness */
     "skipLibCheck": true,
@@ -34,5 +35,5 @@
     "src/**/*",
     "api/**/*"
   ],
-  "exclude": ["node_modules", "**/*.test.ts", "build"]
+  "exclude": ["node_modules", "build"]
 }
